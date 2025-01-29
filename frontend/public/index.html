@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lobby System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <div id="home">
+      <h1>Welcome to the Lobby System</h1>
+      <button id="create-lobby-btn">Create Lobby</button>
+      <input id="join-code" type="text" size="5" onkeydown="SendLobbyCode(event)" placeholder="Enter Lobby Code">
+      <button id="join-lobby-btn" type="button">Join Lobby</button>
+    </div>
+
+    <div id="username-section" class="hidden">
+      <h2>Enter your username</h2>
+      <input id="username" type="text" size="20" onkeydown="SendUsername(event)" placeholder="Enter your username">
+      <button id="submit-username-btn">Submit</button>
+    </div>
+
+    <div id="lobby" class="hidden">
+      <h2 id="lobby-title">Lobby: <span id="lobby-name-display"></span></h2>
+      <div id="players">
+        <h3>Players:</h3>
+        <ul id="player-list"></ul>
+      </div>
+      <textarea id="chat-input" onkeydown="SendMessage(event)" placeholder="Type your message"></textarea>
+      <button id="send-message-btn">Send</button>
+      <div id="chat-box">
+        <h3>Chat:</h3>
+        <ul id="chat-messages"></ul>
+      </div>
+      <button id="leave-lobby-btn">Leave Lobby</button>
+    </div>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/socket.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
