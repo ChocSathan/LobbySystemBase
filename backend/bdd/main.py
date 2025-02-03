@@ -97,3 +97,12 @@ def check_lobby_exists(user: User, file_path="users.csv"):
             if row[2] == user.lobby:
                 return {"exists": True}
     return {"exists": False}
+
+@app.post("/check_username_exists")
+def check_username_exists(user: User, file_path="users.csv"):
+    with open(file_path, mode='r', newline='') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if row[1] == user.username:
+                return {"exists": True}
+    return {"exists": False}

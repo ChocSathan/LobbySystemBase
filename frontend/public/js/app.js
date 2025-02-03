@@ -53,13 +53,27 @@ joinLobbyBtn.addEventListener('click', async () => {
   }
 });
 
-submitUsernameBtn.addEventListener('click', () => {
+submitUsernameBtn.addEventListener('click', async () => {
   username = usernameInput.value.trim();
   if (username) {
-    if (lobbyAction === 'create') {
-      socket.emit('createLobby', { username });
-    } else if (lobbyAction === 'join') {
-      socket.emit('joinLobby', { code: currentLobby, username });
+    // Vérifier si le nom d'utilisateur est déjà pris
+    const response = await fetch('/check_username_exists', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username })
+    });
+    const data = await response.json();
+
+    if (data.exists === false) {
+      if (lobbyAction === 'create') {
+        socket.emit('createLobby', { username });
+      } else if (lobbyAction === 'join') {
+        socket.emit('joinLobby', { code: currentLobby, username });
+      }
+    } else {
+      alert('Username already taken');
     }
   } else {
     console.warn('Username is required');
@@ -82,6 +96,7 @@ leaveLobbyBtn.addEventListener('click', () => {
     currentLobby = null;
     switchToHome();
     removeChatMessages();
+    resetURL();
   } else {
     console.warn('Cannot leave lobby: no current lobby');
   }
@@ -152,6 +167,7 @@ function switchToHome() {
   home.classList.remove("hidden");
   usernameSection.classList.add("hidden");
   lobby.classList.add("hidden");
+  resetURL();
 }
 
 function updatePlayerList(players) {
@@ -227,6 +243,11 @@ function joinLobbyFromURL() {
 function updateURLWithLobbyCode(lobbyCode) {
   const newURL = `${window.location.origin}?lobby=${lobbyCode}`;
   window.history.pushState({ path: newURL }, '', newURL);
+}
+
+function resetURL() {
+  const newURL = window.location.origin;
+  window.history.pushState({}, '', newURL);
 }
 
 // Call the function on page load

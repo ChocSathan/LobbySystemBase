@@ -189,6 +189,19 @@ app.post('/check_lobby_exists', async (req, res) => {
   res.json(data);
 });
 
+app.post('/check_username_exists', async (req, res) => {
+  const { username } = req.body;
+  const response = await fetch("http://127.0.0.1:8000/check_username_exists", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ id: "", username, lobby : "", role: "" })
+  });
+  const data = await response.json();
+  res.json(data);
+});
+
 // Function to get user by lobby
 async function getUserData(userId) {
   const response = await fetch("http://127.0.0.1:8000/get_user_data", {
