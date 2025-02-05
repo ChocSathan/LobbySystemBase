@@ -46,6 +46,13 @@ button:hover {
   background-color: #0056b3;
 }
 
+#chat-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
 #chat-box {
   margin-top: 20px;
   text-align: left;

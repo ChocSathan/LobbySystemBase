@@ -80,6 +80,7 @@ io.on('connection', (socket) => {
 
     socket.leave(lobby);
     console.log(`${username} left lobby: ${lobby}`);
+    updateUser(socket.id, "", "home", "");
     socket.to(lobby).emit('playerLeft', username);
   });
 
@@ -190,13 +191,13 @@ app.post('/check_lobby_exists', async (req, res) => {
 });
 
 app.post('/check_username_exists', async (req, res) => {
-  const { username } = req.body;
+  const { username, lobby } = req.body;
   const response = await fetch("http://127.0.0.1:8000/check_username_exists", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ id: "", username, lobby : "", role: "" })
+    body: JSON.stringify({ id: "", username, lobby, role: ""})
   });
   const data = await response.json();
   res.json(data);
@@ -268,6 +269,7 @@ function kickAllPlayers(lobby, userId) {
         socket.leave(lobby);
         console.log(`Kicked ${socket.username} from lobby: ${lobby}`);
         socket.emit('kicked', 'You have been kicked from the lobby');
+        updateUser(socket.id, "", "home", "");
       }
     });
   }

@@ -21,3 +21,11 @@ project/
 ├── package.json                 # Dépendances et scripts du projet
 ├── package-lock.json            # Verrouillage des versions des dépendances
 └── README.md                    # Documentation du projetDpYLNgmTeKHNp14zAAAB,,home,
+
+TO START API
+$ cd project/backend/bdd 
+$ uvicorn main:app --reload
+
+TO START SERVER
+$ cd project
+$ npm start

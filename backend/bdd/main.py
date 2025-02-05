@@ -1,15 +1,23 @@
 import csv
+import logging
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 # Initialiser l'application FastAPI
 app = FastAPI()
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
 class User(BaseModel):
     id: str
     username: str
     lobby: str
     role: str
+
+class CheckUsernameRequest(BaseModel):
+    username: str
+    lobby: str
 
 @app.post("/create_user")
 def create_user(user: User, file_path="users.csv"):
@@ -102,7 +110,8 @@ def check_lobby_exists(user: User, file_path="users.csv"):
 def check_username_exists(user: User, file_path="users.csv"):
     with open(file_path, mode='r', newline='') as file:
         reader = csv.reader(file)
+        next(reader, None)  # Skip the header row
         for row in reader:
-            if row[1] == user.username:
+            if row[1] == user.username and row[2] == user.lobby:
                 return {"exists": True}
     return {"exists": False}

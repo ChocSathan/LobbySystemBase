@@ -22,15 +22,16 @@
     </div>
 
     <div id="lobby" class="hidden">
-      <h2 id="lobby-title">Lobby: <span id="lobby-name-display"></span></h2>
+      <h2 id="lobby-title"><span id="lobby-name-display"></span>'s Lobby</h2>
+      <h2>Code : <span id="lobby-code-display"></span></h2>
       <div id="players">
         <h3>Players:</h3>
         <ul id="player-list"></ul>
       </div>
       <textarea id="chat-input" onkeydown="SendMessage(event)" maxlenght="1000"  placeholder="Type your message"></textarea>
       <button id="send-message-btn">Send</button>
+      <p id="chat-title">Chat:</p>
       <div id="chat-box">
-        <h3>Chat:</h3>
         <ul id="chat-messages"></ul>
       </div>
       <button id="leave-lobby-btn">Leave Lobby</button>

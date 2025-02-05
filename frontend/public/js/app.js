@@ -4,6 +4,7 @@ const usernameSection = document.getElementById("username-section");
 const lobby = document.getElementById("lobby");
 const joinCodeInput = document.getElementById("join-code");
 const lobbyNameDisplay = document.getElementById("lobby-name-display");
+const lobbyCodeDisplay = document.getElementById("lobby-code-display");
 const playerList = document.getElementById("player-list");
 const chatInput = document.getElementById("chat-input");
 const chatMessages = document.getElementById("chat-messages");
@@ -55,29 +56,29 @@ joinLobbyBtn.addEventListener('click', async () => {
 
 submitUsernameBtn.addEventListener('click', async () => {
   username = usernameInput.value.trim();
+  console.log(username, currentLobby);
   if (username) {
-    // Vérifier si le nom d'utilisateur est déjà pris
-    const response = await fetch('/check_username_exists', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ username })
-    });
-    const data = await response.json();
-
-    if (data.exists === false) {
       if (lobbyAction === 'create') {
         socket.emit('createLobby', { username });
       } else if (lobbyAction === 'join') {
-        socket.emit('joinLobby', { code: currentLobby, username });
+      // Vérifier si le nom d'utilisateur est déjà pris dans le même lobby
+      const response = await fetch('/check_username_exists', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: username, lobby: currentLobby })
+      });
+      const data = await response.json();
+      if (data.exists === false) {
+          socket.emit('joinLobby', { code: currentLobby, username });
+      } else {
+      alert('Username already taken in this lobby');
       }
-    } else {
-      alert('Username already taken');
-    }
   } else {
     console.warn('Username is required');
   }
+}
 });
 
 sendMessageBtn.addEventListener('click', () => {
@@ -108,7 +109,8 @@ socket.on('lobbyCreated', async ({ lobbyName }) => {
   updateURLWithLobbyCode(lobbyName);
   const players = await fetchPlayers(lobbyName);
   updatePlayerList(players);
-  switchToLobby(lobbyName);
+  switchToLobby(lobbyName, username);
+  addChatMessage("Welcome to the lobby!");
 });
 
 socket.on('joinedLobby', async ({ lobbyName }) => {
@@ -116,7 +118,9 @@ socket.on('joinedLobby', async ({ lobbyName }) => {
   updateURLWithLobbyCode(lobbyName);
   const players = await fetchPlayers(lobbyName);
   updatePlayerList(players);
-  switchToLobby(lobbyName);
+  const host = players.find(player => player[1] === "Host")[0];
+  switchToLobby(lobbyName, host);
+  addChatMessage("someone joined the lobby");
 });
 
 socket.on('newMessage', ({ sender, message }) => {
@@ -124,6 +128,7 @@ socket.on('newMessage', ({ sender, message }) => {
     const li = document.createElement('li');
     li.textContent = `${sender}: ${message}`;
     chatMessages.appendChild(li);
+    scrollToBottom();
   } else {
     console.warn('Invalid message received:', { sender, message });
   }
@@ -157,10 +162,11 @@ function switchToUsernameSection() {
   usernameSection.classList.remove("hidden");
 }
 
-function switchToLobby(lobbyName) {
+function switchToLobby(lobbyName, hostName) {
   usernameSection.classList.add("hidden");
   lobby.classList.remove("hidden");
-  lobbyNameDisplay.textContent = lobbyName;
+  lobbyNameDisplay.textContent = hostName;
+  lobbyCodeDisplay.textContent = lobbyName;
 }
 
 function switchToHome() {
@@ -248,6 +254,11 @@ function updateURLWithLobbyCode(lobbyCode) {
 function resetURL() {
   const newURL = window.location.origin;
   window.history.pushState({}, '', newURL);
+}
+
+function scrollToBottom() {
+  const chatBox = document.getElementById('chat-box');
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 // Call the function on page load
