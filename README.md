@@ -23,9 +23,8 @@ project/
 └── README.md                    # Documentation du projet  
   
 TO START API  
-$ cd project/backend/bdd  
+$ cd backend/bdd  
 $ uvicorn main:app --reload  
   
 TO START SERVER  
-$ cd project  
 $ npm start  
